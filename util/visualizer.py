@@ -3,7 +3,7 @@ import os
 import sys
 import ntpath
 import time
-from . import util, html
+from util import util, html
 from subprocess import Popen, PIPE
 
 
@@ -81,7 +81,7 @@ class Visualizer():
         # create a logging file to store training losses
         self.log_name = os.path.join(opt.checkpoints_dir, opt.name, 'loss_log.txt')
         print(f"Logging to {self.log_name}")
-        with open(self.log_name, "a") as log_file:
+        with open(self.log_name, "w") as log_file:
             now = time.strftime("%c")
             log_file.write('================ Training Loss (%s) ================\n' % now)
 
