@@ -2,6 +2,7 @@
 
 It also includes common transformation functions (e.g., get_transform, __scale_width), which can be later used in subclasses.
 """
+import os
 import random
 import numpy as np
 import torch.utils.data as data
@@ -27,7 +28,11 @@ class BaseDataset(data.Dataset, ABC):
             opt (Option class)-- stores all the experiment flags; needs to be a subclass of BaseOptions
         """
         self.opt = opt
-        self.root = opt.dataroot
+
+        if self.opt.environment == "wml":
+            self.root = os.path.join(os.getenv("DATA_DIR"), opt.dataroot)
+        else:
+            self.root = opt.dataroot
 
     @staticmethod
     def modify_commandline_options(parser, is_train):

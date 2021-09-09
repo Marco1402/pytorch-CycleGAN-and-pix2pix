@@ -49,7 +49,7 @@ class Visualizer():
     It uses a Python library 'visdom' for display, and a Python library 'dominate' (wrapped in 'HTML') for creating HTML files with images.
     """
 
-    def __init__(self, opt):
+    def __init__(self, opt, result_dir):
         """Initialize the Visualizer class
 
         Parameters:
@@ -59,6 +59,7 @@ class Visualizer():
         Step 3: create an HTML object for saveing HTML filters
         Step 4: create a logging file to store training losses
         """
+        self.result_dir = result_dir
         self.opt = opt  # cache the option
         self.display_id = opt.display_id
         self.use_html = opt.isTrain and not opt.no_html
@@ -74,12 +75,12 @@ class Visualizer():
                 self.create_visdom_connections()
 
         if self.use_html:  # create an HTML object at <checkpoints_dir>/web/; images will be saved under <checkpoints_dir>/web/images/
-            self.web_dir = os.path.join(opt.checkpoints_dir, opt.name, 'web')
+            self.web_dir = os.path.join(self.result_dir, opt.checkpoints_dir, opt.name, 'web')
             self.img_dir = os.path.join(self.web_dir, 'images')
             print('create web directory %s...' % self.web_dir)
             util.mkdirs([self.web_dir, self.img_dir])
         # create a logging file to store training losses
-        self.log_name = os.path.join(opt.checkpoints_dir, opt.name, 'loss_log.txt')
+        self.log_name = os.path.join(result_dir, opt.checkpoints_dir, opt.name, 'loss_log.txt')
         print(f"Logging to {self.log_name}")
         with open(self.log_name, "w") as log_file:
             now = time.strftime("%c")

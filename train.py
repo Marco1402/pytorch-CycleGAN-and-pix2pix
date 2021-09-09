@@ -18,21 +18,41 @@ See options/base_options.py and options/train_options.py for more training optio
 See training and test tips at: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/blob/master/docs/tips.md
 See frequently asked questions at: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/blob/master/docs/qa.md
 """
+import os
 import time
 from options.train_options import TrainOptions
 from data import create_dataset
 from models import create_model
 from util.visualizer import Visualizer
+import torch
 
 if __name__ == '__main__':
     opt = TrainOptions().parse()   # get training options
+
+    if opt.environment == "wml":
+        data_dir = os.getenv(
+            "DATA_DIR"
+        )  # this is a reference to your training data bucket
+        result_dir = os.getenv(
+            "RESULT_DIR"
+        )  # this is a reference to your current training_id/ folder under your result bucket
+    else:
+        data_dir = os.getcwd()
+        result_dir = os.getcwd()
+
+    # Check GPU usage
+    print("---GPU usage---")
+    print(f"No. of GPUs available: {torch.cuda.device_count()}")
+    print(f"Current GPU: {torch.cuda.current_device()}")
+    print(f"GPU name: {torch.cuda.get_device_name(torch.cuda.current_device())}")
+
     dataset = create_dataset(opt)  # create a dataset given opt.dataset_mode and other options
     dataset_size = len(dataset)    # get the number of images in the dataset.
     print('The number of training images = %d' % dataset_size)
 
     model = create_model(opt)      # create a model given opt.model and other options
     model.setup(opt)               # regular setup: load and print networks; create schedulers
-    visualizer = Visualizer(opt)   # create a visualizer that display/save images and plots
+    visualizer = Visualizer(opt, result_dir)   # create a visualizer that display/save images and plots
     total_iters = 0                # the total number of training iterations
 
     for epoch in range(opt.epoch_count, opt.n_epochs + opt.n_epochs_decay + 1):    # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
@@ -66,7 +86,7 @@ if __name__ == '__main__':
             if total_iters % opt.save_latest_freq == 0:   # cache our latest model every <save_latest_freq> iterations
                 print('saving the latest model (epoch %d, total_iters %d)' % (epoch, total_iters))
                 save_suffix = 'iter_%d' % total_iters if opt.save_by_iter else 'latest'
-                model.save_networks(save_suffix)
+                model.save_networks(save_suffix, result_dir)
 
             iter_data_time = time.time()
         if epoch % opt.save_epoch_freq == 0:              # cache our model every <save_epoch_freq> epochs
