@@ -40,11 +40,11 @@ if __name__ == '__main__':
         data_dir = os.getcwd()
         result_dir = os.getcwd()
 
-    # Check GPU usage
-    print("---GPU usage---")
-    print(f"No. of GPUs available: {torch.cuda.device_count()}")
-    print(f"Current GPU: {torch.cuda.current_device()}")
-    print(f"GPU name: {torch.cuda.get_device_name(torch.cuda.current_device())}")
+    # # Check GPU usage
+    # print("---GPU usage---")
+    # print(f"No. of GPUs available: {torch.cuda.device_count()}")
+    # print(f"Current GPU: {torch.cuda.current_device()}")
+    # print(f"GPU name: {torch.cuda.get_device_name(torch.cuda.current_device())}")
 
     dataset = create_dataset(opt)  # create a dataset given opt.dataset_mode and other options
     dataset_size = len(dataset)    # get the number of images in the dataset.
@@ -73,6 +73,9 @@ if __name__ == '__main__':
 
             if total_iters % opt.display_freq == 0:   # display images on visdom and save images to a HTML file
                 save_result = total_iters % opt.update_html_freq == 0
+                img_path = model.get_image_paths()  # get image paths
+                print("image_path")
+                print(img_path)
                 model.compute_visuals()
                 visualizer.display_current_results(model.get_current_visuals(), epoch, save_result)
 

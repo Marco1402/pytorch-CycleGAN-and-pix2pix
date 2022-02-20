@@ -159,6 +159,10 @@ class Visualizer():
             self.saved = True
             # save images to the disk
             for label, image in visuals.items():
+                print("label")
+                print(label)
+                print("image")
+                print(image)
                 image_numpy = util.tensor2im(image)
                 img_path = os.path.join(self.img_dir, 'epoch%.3d_%s.png' % (epoch, label))
                 util.save_image(image_numpy, img_path)

@@ -130,6 +130,8 @@ class BaseModel(ABC):
         visual_ret = OrderedDict()
         for name in self.visual_names:
             if isinstance(name, str):
+                print("Here name")
+                print(name)
                 visual_ret[name] = getattr(self, name)
         return visual_ret
 
